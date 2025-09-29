@@ -1,15 +1,15 @@
 {
   "version": 2,
-  "functions": {
-    "api/**/*": {
-      "runtime": "@vercel/node@3",
-      "memory": 1024
-    }
-  },
-  "rewrites": [
+  "builds": [
     {
-      "source": "/(.*)",
-      "destination": "/api/server.js"
+      "src": "server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "server.js"
     }
   ]
 }
