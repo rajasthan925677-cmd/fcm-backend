@@ -2,7 +2,7 @@
   "version": 2,
   "functions": {
     "api/**/*": {
-      "runtime": "@vercel/node@3",
+      "runtime": "@vercel/node",
       "memory": 1024
     }
   },
