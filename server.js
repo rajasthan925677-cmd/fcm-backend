@@ -64,7 +64,7 @@ app.post('/api/send-notification', async (req, res) => {
 
   try {
     // Save notification to Firestore with 'pending' status
-    notificationRef = await db.collection('users').add({
+    notificationRef = await db.collection('notifications').add({
       title,
       body,
       topic,
