@@ -1,11 +1,43 @@
+
 const express = require('express');
 const admin = require('firebase-admin');
 const cors = require('cors');
+require('dotenv').config(); // Load .env file
 
-// Load Firebase service account key
-const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
-  ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
-  : require('./serviceAccountKey.json');
+// Load Firebase service account from environment variables
+const serviceAccount = {
+  type: process.env.FIREBASE_TYPE,
+  project_id: process.env.FIREBASE_PROJECT_ID,
+  private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
+  private_key: process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : undefined,
+  client_email: process.env.FIREBASE_CLIENT_EMAIL,
+  client_id: process.env.FIREBASE_CLIENT_ID,
+  auth_uri: process.env.FIREBASE_AUTH_URI,
+  token_uri: process.env.FIREBASE_TOKEN_URI,
+  auth_provider_x509_cert_url: process.env.FIREBASE_AUTH_PROVIDER_X509_CERT_URL,
+  client_x509_cert_url: process.env.FIREBASE_CLIENT_X509_CERT_URL,
+  universe_domain: process.env.FIREBASE_UNIVERSE_DOMAIN
+};
+
+// Check if all required environment variables are set
+const requiredEnvVars = [
+  'FIREBASE_TYPE',
+  'FIREBASE_PROJECT_ID',
+  'FIREBASE_PRIVATE_KEY_ID',
+  'FIREBASE_PRIVATE_KEY',
+  'FIREBASE_CLIENT_EMAIL',
+  'FIREBASE_CLIENT_ID',
+  'FIREBASE_AUTH_URI',
+  'FIREBASE_TOKEN_URI',
+  'FIREBASE_AUTH_PROVIDER_X509_CERT_URL',
+  'FIREBASE_CLIENT_X509_CERT_URL',
+  'FIREBASE_UNIVERSE_DOMAIN'
+];
+const missingEnvVars = requiredEnvVars.filter(key => !process.env[key]);
+if (missingEnvVars.length > 0) {
+  console.error(`Missing environment variables: ${missingEnvVars.join(', ')}`);
+  process.exit(1);
+}
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -142,6 +174,5 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-// Export app for Vercel (use this for deployment)
-// Replace 'http://localhost:3001' with 'https://your-vercel-app.vercel.app' in TokenSyncWorker
+// Export app for Vercel
 module.exports = app;
