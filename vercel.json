@@ -1,9 +1,8 @@
 {
-  
-"version": 2,
+  "version": 2,
   "functions": {
     "api/**/*": {
-      "runtime": "nodejs18.x",
+      "runtime": "@vercel/node@3",
       "memory": 1024
     }
   },
