@@ -2,14 +2,15 @@
   "version": 2,
   "builds": [
     { "src": "server.js", "use": "@vercel/node" },
-    { "src": "api/**/*.js", "use": "@vercel/node" }
+    { "src": "api/reset-games-daily.mjs", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" }
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/(.*)", "dest": "/server.js" }
   ],
   "crons": [
     {
-      "path": "/api/reset-games",
+      "path": "/api/reset-games-daily",
       "schedule": "30 21 * * *"
     }
   ]
