@@ -9,7 +9,7 @@
   "crons": [
     {
       "path": "/api/reset-games",
-      "schedule": "40 8 * * *"
+      "schedule": "5 9 * * *"
     }
   ]
 }
