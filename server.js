@@ -174,5 +174,66 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
+
+
+
+
+
+//auto reset wala 
+
+
+
+// -------------------------
+// Endpoint: Auto Reset Games (Cron Job)
+// -------------------------
+app.post('/api/reset-games', async (req, res) => {
+  // सिक्योरिटी: सिर्फ Vercel Cron ही कॉल कर सके
+  const authHeader = req.headers['authorization'];
+  if (!authHeader || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return res.status(401).json({ error: 'Unauthorized access' });
+  }
+
+  try {
+    const gamesRef = db.collection('games');
+    const snapshot = await gamesRef.get();
+
+    if (snapshot.empty) {
+      return res.status(200).json({ message: 'No games found to reset' });
+    }
+
+    const promises = snapshot.docs.map(doc => 
+      doc.ref.update({
+        openResult: "",
+        closeResult: ""
+      })
+    );
+
+    await Promise.all(promises);
+
+    console.log(`Auto reset: ${snapshot.size} games reset at ${new Date().toISOString()}`);
+
+    res.status(200).json({ 
+      message: `Successfully reset ${snapshot.size} games`,
+      count: snapshot.size,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error('Auto reset failed:', error);
+    res.status(500).json({ error: 'Failed to reset games', details: error.message });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Export app for Vercel
 module.exports = app;
