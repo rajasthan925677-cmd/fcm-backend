@@ -6,7 +6,7 @@
   ],
   "routes": [
     { "src": "/api/reset-games-daily", "dest": "/api/reset-games-daily.js" },
-    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/api/(.*)", "dest": "/server.js" },
     { "src": "/(.*)", "dest": "/server.js" }
   ],
   "crons": [
