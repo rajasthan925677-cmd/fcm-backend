@@ -1,8 +1,8 @@
-// api/reset-games-daily.mjs   (file name .mjs kar de)
+// api/reset-games-daily.js  (CommonJS for Vercel compatibility)
 
-import admin from 'firebase-admin';
+const admin = require('firebase-admin');
 
-// Agar already initialize nahi hai
+// Initialize Firebase if not already
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert({
@@ -23,7 +23,7 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
   try {
     console.log("Daily reset triggered at:", new Date().toISOString());
 
@@ -44,6 +44,8 @@ export default async function handler(req, res) {
 
     await batch.commit();
 
+    console.log(`Reset ${snapshot.size} games`);
+
     res.status(200).json({
       success: true,
       resetCount: snapshot.size,
@@ -54,8 +56,4 @@ export default async function handler(req, res) {
     console.error("Reset failed:", error);
     res.status(500).json({ error: error.message });
   }
-}
-
-export const config = {
-  schedule: "30 21 * * *"  // 3:00 AM IST har roz
 };

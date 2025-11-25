@@ -2,9 +2,10 @@
   "version": 2,
   "builds": [
     { "src": "server.js", "use": "@vercel/node" },
-    { "src": "api/reset-games-daily.mjs", "use": "@vercel/node" }
+    { "src": "api/reset-games-daily.js", "use": "@vercel/node" }
   ],
   "routes": [
+    { "src": "/api/reset-games-daily", "dest": "/api/reset-games-daily.js" },
     { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/(.*)", "dest": "/server.js" }
   ],
