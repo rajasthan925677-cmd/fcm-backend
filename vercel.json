@@ -3,13 +3,10 @@
   "builds": [
     { "src": "server.js", "use": "@vercel/node" }
   ],
-  "routes": [
-    { "src": "/(.*)", "dest": "server.js" }
-  ],
   "crons": [
     {
       "path": "/api/reset-games",
-      "schedule": "5 9 * * *"
+      "schedule": "*/1 * * * *"
     }
   ]
 }
