@@ -186,60 +186,34 @@ app.listen(PORT, () => {
 // -------------------------
 // Endpoint: Auto Reset Games (Cron Job)
 // -------------------------
-app.post('/api/reset-games', async (req, res) => {
-  // सिक्योरिटी: सिर्फ Vercel Cron ही कॉल कर सके
-  // Allow Vercel Cron OR allow authorized manual trigger
-const authHeader = req.headers['authorization'];
-const isCron = req.headers['x-vercel-cron'];
+async function resetGames() {
+  const gamesRef = db.collection('games');
+  const snapshot = await gamesRef.get();
 
-if (!isCron && (!authHeader || authHeader !== `Bearer ${process.env.CRON_SECRET}`)) {
-  return res.status(401).json({ error: 'Unauthorized access' });
+  if (snapshot.empty) {
+    return { message: 'No games found to reset' };
+  }
+
+  const promises = snapshot.docs.map(doc =>
+    doc.ref.update({
+      openResult: "",
+      closeResult: ""
+    })
+  );
+
+  await Promise.all(promises);
+
+  console.log(`Auto reset: ${snapshot.size} games reset at ${new Date().toISOString()}`);
+
+  return {
+    message: `Successfully reset ${snapshot.size} games`,
+    count: snapshot.size,
+    timestamp: new Date().toISOString()
+  };
 }
 
+module.exports.resetGames = resetGames;
 
-  try {
-    const gamesRef = db.collection('games');
-    const snapshot = await gamesRef.get();
-
-    if (snapshot.empty) {
-      return res.status(200).json({ message: 'No games found to reset' });
-    }
-
-    const promises = snapshot.docs.map(doc => 
-      doc.ref.update({
-        openResult: "",
-        closeResult: ""
-      })
-    );
-
-    await Promise.all(promises);
-
-    console.log(`Auto reset: ${snapshot.size} games reset at ${new Date().toISOString()}`);
-
-    res.status(200).json({ 
-      message: `Successfully reset ${snapshot.size} games`,
-      count: snapshot.size,
-      timestamp: new Date().toISOString()
-    });
-  } catch (error) {
-    console.error('Auto reset failed:', error);
-    res.status(500).json({ error: 'Failed to reset games', details: error.message });
-  }
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Export app for Vercel
 module.exports = app;
 
 
