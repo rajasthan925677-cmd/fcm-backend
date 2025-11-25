@@ -169,10 +169,10 @@ app.get('/', (req, res) => {
 // -------------------------
 // Localhost configuration
 // -------------------------
-//const PORT = process.env.PORT || 3001;
-//app.listen(PORT, () => {
-  //console.log(`Server is running on port ${PORT}`);
-//});
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
 
 
 
@@ -240,9 +240,9 @@ module.exports = app;
 
 
 // Only run locally
-if (require.main === module) {
-  const PORT = process.env.PORT || 3001;
-  app.listen(PORT, () => {
-    console.log(`Local server running on http://localhost:${PORT}`);
-  });
-}
+//if (require.main === module) {
+  //const PORT = process.env.PORT || 3001;
+  //app.listen(PORT, () => {
+    //console.log(`Local server running on http://localhost:${PORT}`);
+  //});
+//}
