@@ -6,7 +6,7 @@
   "crons": [
     {
       "path": "/api/reset-games",
-      "schedule": "*/1 * * * *"
+      "schedule": "30 21 * * *"
     }
   ]
 }
