@@ -176,48 +176,90 @@ app.get('/', (req, res) => {
 
 
 
-// ++++++++++++++ AUTO RESULT NOTIFICATION ENDPOINT ++++++++++++++
+// // ++++++++++++++ AUTO RESULT NOTIFICATION ENDPOINT ++++++++++++++
+// app.post('/api/send-result-notification', async (req, res) => {
+//   const { gameName, openResult, closeResult, resultDate } = req.body;
+
+//   if (!gameName) {
+//     return res.status(400).json({ error: 'gameName is required' });
+//   }
+
+//   let title = `${gameName} - Result Declared!🏆💥`;
+//   let body = '';
+
+//   if (openResult && closeResult) {
+//     body = `Open: ${openResult} | Close: ${closeResult}`;
+//   } else if (openResult) {
+//     body = `Open Result: ${openResult}`;
+//   } else if (closeResult) {
+//     body = `Close Result: ${closeResult}`;
+//   } else {
+//     body = 'Result has been declared!';
+//   }
+
+//   try {
+//     const message = {
+//       notification: { title, body },
+//       data: { 
+//         click_action: 'FLUTTER_NOTIFICATION_CLICK',
+//         type: 'result',
+//         game: gameName
+//       },
+//       topic: 'main_notifications'   // ya 'result_notifications' jo bhi tune user app mein subscribe kiya
+//     };
+
+//     await messaging.send(message);
+//     console.log('Notification sent successfully:', title, body);
+
+//     res.json({ success: true, title, body });
+//   } catch (error) {
+//     console.error('FCM Error:', error.message);
+//     res.status(500).json({ error: error.message });
+//   }
+// });
+// // +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+// ++++++++++++++ AUTO RESULT NOTIFICATION ENDPOINT (NEW) ++++++++++++++
 app.post('/api/send-result-notification', async (req, res) => {
-  const { gameName, openResult, closeResult, resultDate } = req.body;
+  const { title, body, gameName } = req.body;
 
-  if (!gameName) {
-    return res.status(400).json({ error: 'gameName is required' });
-  }
-
-  let title = `${gameName} - Result Declared!🏆💥`;
-  let body = '';
-
-  if (openResult && closeResult) {
-    body = `Open: ${openResult} | Close: ${closeResult}`;
-  } else if (openResult) {
-    body = `Open Result: ${openResult}`;
-  } else if (closeResult) {
-    body = `Close Result: ${closeResult}`;
-  } else {
-    body = 'Result has been declared!';
-  }
+  // Title aur body frontend se hi final bheja jayega
+  const finalTitle = title || `${gameName} - Result Declared!`;
+  const finalBody = body || 'Result has been declared!';
 
   try {
     const message = {
-      notification: { title, body },
+      notification: { 
+        title: finalTitle, 
+        body: finalBody 
+      },
       data: { 
         click_action: 'FLUTTER_NOTIFICATION_CLICK',
         type: 'result',
-        game: gameName
+        game: gameName || 'Unknown'
       },
-      topic: 'main_notifications'   // ya 'result_notifications' jo bhi tune user app mein subscribe kiya
+      topic: 'main_notifications'
     };
 
     await messaging.send(message);
-    console.log('Notification sent successfully:', title, body);
+    console.log('Result Notification Sent:', finalTitle, finalBody);
 
-    res.json({ success: true, title, body });
+    res.json({ success: true, title: finalTitle, body: finalBody });
   } catch (error) {
     console.error('FCM Error:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+
+
+
+
+
+
 // -------------------------
 // Localhost configuration
 // -------------------------
