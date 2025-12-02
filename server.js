@@ -159,6 +159,9 @@ app.post('/api/set-custom-claims', async (req, res) => {
   }
 });
 
+
+
+
 // -------------------------
 // Health check
 // -------------------------
@@ -166,6 +169,55 @@ app.get('/', (req, res) => {
   res.send('Notification & Password backend is running...');
 });
 
+
+
+
+
+
+
+
+// ++++++++++++++ AUTO RESULT NOTIFICATION ENDPOINT ++++++++++++++
+app.post('/api/send-result-notification', async (req, res) => {
+  const { gameName, openResult, closeResult, resultDate } = req.body;
+
+  if (!gameName) {
+    return res.status(400).json({ error: 'gameName is required' });
+  }
+
+  let title = `${gameName} - Result Declared!🏆💥`;
+  let body = '';
+
+  if (openResult && closeResult) {
+    body = `Open: ${openResult} | Close: ${closeResult}`;
+  } else if (openResult) {
+    body = `Open Result: ${openResult}`;
+  } else if (closeResult) {
+    body = `Close Result: ${closeResult}`;
+  } else {
+    body = 'Result has been declared!';
+  }
+
+  try {
+    const message = {
+      notification: { title, body },
+      data: { 
+        click_action: 'FLUTTER_NOTIFICATION_CLICK',
+        type: 'result',
+        game: gameName
+      },
+      topic: 'main_notifications'   // ya 'result_notifications' jo bhi tune user app mein subscribe kiya
+    };
+
+    await messaging.send(message);
+    console.log('Notification sent successfully:', title, body);
+
+    res.json({ success: true, title, body });
+  } catch (error) {
+    console.error('FCM Error:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // -------------------------
 // Localhost configuration
 // -------------------------
